@@ -27,8 +27,8 @@
 
     /* Container Card */
     .card {
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
       border-radius: 24px;
       padding: 30px 20px;
       box-shadow: 0 15px 35px rgba(220, 38, 38, 0.2);
@@ -37,21 +37,20 @@
       text-align: center;
       position: relative;
       z-index: 10;
-      transition: all 0.4s ease;
     }
 
     h1 {
       font-family: 'Great Vibes', cursive;
       color: #dc2626;
       font-size: 2.8rem;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
       line-height: 1.2;
     }
 
     p {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       color: #4b5563;
-      margin-bottom: 25px;
+      margin-bottom: 22px;
       font-weight: 600;
     }
 
@@ -70,12 +69,12 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Buttons */
+    /* Step 1 Buttons Container */
     .btn-container {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 15px;
+      gap: 20px;
       position: relative;
       min-height: 60px;
     }
@@ -87,13 +86,14 @@
       border: none;
       border-radius: 50px;
       cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
       box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      z-index: 2;
     }
 
     .btn-yes {
       background-color: #dc2626;
       color: white;
+      transition: transform 0.2s ease;
     }
 
     .btn-yes:active {
@@ -103,16 +103,16 @@
     .btn-no {
       background-color: #9ca3af;
       color: white;
-      position: absolute;
-      transition: all 0.2s ease;
+      /* Slower and smooth float animation */
+      transition: top 0.7s cubic-bezier(0.25, 1, 0.5, 1), left 0.7s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
-    /* Interactive Selectable Lists */
+    /* Interactive Lists */
     .option-list {
       display: flex;
       flex-direction: column;
       gap: 12px;
-      max-height: 250px;
+      max-height: 260px;
       overflow-y: auto;
       padding: 5px;
     }
@@ -137,28 +137,67 @@
       color: #dc2626;
     }
 
-    /* Simple Date Picker Grid */
+    /* Interactive Dynamic Calendar */
+    .cal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding: 0 5px;
+    }
+
+    .cal-title {
+      font-weight: 700;
+      color: #dc2626;
+      font-size: 1.1rem;
+    }
+
+    .cal-nav-btn {
+      background: #f3f4f6;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #374151;
+      transition: background 0.2s;
+    }
+
+    .cal-nav-btn:hover {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
-      margin-top: 15px;
+      gap: 5px;
     }
 
     .day-name {
       font-size: 0.75rem;
       font-weight: bold;
       color: #9ca3af;
+      margin-bottom: 5px;
     }
 
     .date-btn {
       background: white;
       border: 1px solid #e5e7eb;
       padding: 10px 0;
-      border-radius: 12px;
+      border-radius: 10px;
       font-weight: 600;
+      font-size: 0.9rem;
       cursor: pointer;
       position: relative;
+      transition: background 0.2s;
+    }
+
+    .date-btn.empty {
+      background: transparent;
+      border: none;
+      cursor: default;
     }
 
     .date-btn.selected {
@@ -168,10 +207,10 @@
     }
 
     .heart-marker {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       position: absolute;
-      top: -4px;
-      right: -2px;
+      top: -3px;
+      right: -1px;
     }
 
     /* Animated Heart Overlay */
@@ -215,31 +254,28 @@
       <h1>Hey Beautiful!</h1>
       <p>Will you go on a date with Luca Stringer?</p>
       <div class="btn-container">
-        <button class="btn btn-yes" id="yes-btn" onclick="handleYes()">Yes! ❤️</button>
+        <button class="btn btn-yes" id="yes-btn" onclick="handleYes()">Yes</button>
         <button class="btn btn-no" id="no-btn">No</button>
       </div>
     </div>
 
     <div class="step" id="step-2">
       <h1>Pick a Date 📅</h1>
-      <p>Which day are you free?</p>
-      <div class="calendar-grid">
-        <div class="day-name">S</div><div class="day-name">M</div><div class="day-name">T</div>
-        <div class="day-name">W</div><div class="day-name">T</div><div class="day-name">F</div><div class="day-name">S</div>
-        
-        <button class="date-btn" onclick="selectDate(this, 'Fri, Next Week')">Fri</button>
-        <button class="date-btn" onclick="selectDate(this, 'Sat, Next Week')">Sat</button>
-        <button class="date-btn" onclick="selectDate(this, 'Sun, Next Week')">Sun</button>
-        <button class="date-btn" onclick="selectDate(this, 'Fri, In 2 Weeks')">Fri</button>
-        <button class="date-btn" onclick="selectDate(this, 'Sat, In 2 Weeks')">Sat</button>
-        <button class="date-btn" onclick="selectDate(this, 'Sun, In 2 Weeks')">Sun</button>
-        <button class="date-btn" onclick="selectDate(this, 'Any Weekend')">Any</button>
+      <p>Which day works for you?</p>
+      
+      <div class="cal-header">
+        <button class="cal-nav-btn" onclick="changeMonth(-1)">&lt;</button>
+        <span class="cal-title" id="cal-month-year"></span>
+        <button class="cal-nav-btn" onclick="changeMonth(1)">&gt;</button>
       </div>
+
+      <div class="calendar-grid" id="calendar-days">
+        </div>
     </div>
 
     <div class="step" id="step-3">
       <h1>Pick a Time ⏰</h1>
-      <p>What time works best for you?</p>
+      <p>What time would you like to go out?</p>
       <div class="option-list">
         <div class="option-item" onclick="selectTime(this, '5:00 PM')">5:00 PM <span></span></div>
         <div class="option-item" onclick="selectTime(this, '6:00 PM')">6:00 PM <span></span></div>
@@ -250,21 +286,19 @@
 
     <div class="step" id="step-4">
       <h1>Where to Eat? 🍽️</h1>
-      <p>Pick a spot in the Hampton Area:</p>
+      <p>What restaurant will you want to go out to?</p>
       <div class="option-list">
         <div class="option-item" onclick="selectRestaurant(this, 'The Old Salt')">The Old Salt <span></span></div>
         <div class="option-item" onclick="selectRestaurant(this, 'The Galley Hatch')">The Galley Hatch <span></span></div>
-        <div class="option-item" onclick="selectRestaurant(this, 'Bernie\'s Beach Bar')">Bernie's Beach Bar <span></span></div>
-        <div class="option-item" onclick="selectRestaurant(this, 'Smuttynose Brewing Co.')">Smuttynose Brewery <span></span></div>
-        <div class="option-item" onclick="selectRestaurant(this, 'The Goat Bar & Grill')">The Goat <span></span></div>
+        <div class="option-item" onclick="selectRestaurant(this, 'Las Olas Taqueria')">Las Olas Taqueria <span></span></div>
         <div class="option-item" onclick="selectRestaurant(this, 'Surprise Me!')">Surprise Me! <span></span></div>
       </div>
     </div>
 
     <div class="step" id="step-5">
       <h1>It's a Date! 🎉</h1>
-      <p id="final-summary" style="line-height: 1.6; color: #dc2626; font-size: 1.2rem;"></p>
-      <p style="font-size: 0.95rem; color: #6b7280; margin-top: 10px;">I'll pick you up! Can't wait ❤️</p>
+      <p id="final-summary" style="line-height: 1.6; color: #dc2626; font-size: 1.15rem; margin-bottom: 15px;"></p>
+      <p style="font-size: 1rem; color: #4b5563; font-weight: 600;">Be at the restaurant on that day and time! Can't wait ❤️</p>
     </div>
 
   </div>
@@ -277,13 +311,23 @@
       restaurant: ''
     };
 
-    // --- EVASIVE "NO" BUTTON LOGIC ---
+    // Current calendar date view
+    let currentDate = new Date();
+
+    // --- SLOW & SMOOTH EVASIVE "NO" BUTTON LOGIC ---
     const noBtn = document.getElementById('no-btn');
+    let hasMoved = false;
     
     function moveNoBtn() {
-      const x = Math.random() * (window.innerWidth - 120);
-      const y = Math.random() * (window.innerHeight - 60);
-      noBtn.style.position = 'fixed';
+      if (!hasMoved) {
+        noBtn.style.position = 'fixed';
+        hasMoved = true;
+      }
+      // Calculate random screen position keeping padding from edges
+      const padding = 80;
+      const x = Math.random() * (window.innerWidth - padding * 2) + padding / 2;
+      const y = Math.random() * (window.innerHeight - padding * 2) + padding / 2;
+      
       noBtn.style.left = `${x}px`;
       noBtn.style.top = `${y}px`;
     }
@@ -322,11 +366,64 @@
 
     function handleYes() {
       triggerHeartExplosion(40);
+      renderCalendar();
       setTimeout(() => goToStep(2), 1200);
     }
 
+    // --- INTERACTIVE CALENDAR ENGINE ---
+    function renderCalendar() {
+      const monthYearTitle = document.getElementById('cal-month-year');
+      const daysGrid = document.getElementById('calendar-days');
+      
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+
+      const monthNames = ["January", "February", "March", "April", "May", "June", 
+                          "July", "August", "September", "October", "November", "December"];
+      
+      monthYearTitle.innerText = `${monthNames[month]} ${year}`;
+
+      daysGrid.innerHTML = `
+        <div class="day-name">S</div><div class="day-name">M</div><div class="day-name">T</div>
+        <div class="day-name">W</div><div class="day-name">T</div><div class="day-name">F</div><div class="day-name">S</div>
+      `;
+
+      const firstDayIndex = new Date(year, month, 1).getDay();
+      const totalDays = new Date(year, month + 1, 0).getDate();
+
+      // Empty slots before 1st of month
+      for (let i = 0; i < firstDayIndex; i++) {
+        const emptyDiv = document.createElement('div');
+        emptyDiv.classList.add('date-btn', 'empty');
+        daysGrid.appendChild(emptyDiv);
+      }
+
+      // Month days
+      for (let day = 1; day <= totalDays; day++) {
+        const dateBtn = document.createElement('button');
+        dateBtn.classList.add('date-btn');
+        dateBtn.innerText = day;
+        
+        const fullDateStr = `${monthNames[month]} ${day}, ${year}`;
+        
+        // Highlight previously selected date if viewing same month
+        if (answers.date === fullDateStr) {
+          dateBtn.classList.add('selected');
+          dateBtn.innerHTML += `<span class="heart-marker">❤️</span>`;
+        }
+
+        dateBtn.onclick = () => selectDate(dateBtn, fullDateStr);
+        daysGrid.appendChild(dateBtn);
+      }
+    }
+
+    function changeMonth(delta) {
+      currentDate.setMonth(currentDate.getMonth() + delta);
+      renderCalendar();
+    }
+
     // --- SELECTION HANDLERS ---
-    function selectDate(element, value) {
+    function selectDate(element, dateStr) {
       document.querySelectorAll('.date-btn').forEach(btn => {
         btn.classList.remove('selected');
         const marker = btn.querySelector('.heart-marker');
@@ -335,10 +432,10 @@
 
       element.classList.add('selected');
       element.innerHTML += `<span class="heart-marker">❤️</span>`;
-      answers.date = value;
+      answers.date = dateStr;
 
       triggerHeartExplosion(20);
-      setTimeout(() => goToStep(3), 3000); // 3-second delay as requested
+      setTimeout(() => goToStep(3), 3000); // 3-second delay
     }
 
     function selectTime(element, value) {
@@ -374,14 +471,13 @@
 
     // --- FINAL DISPLAY & FORMSPREE SUBMISSION ---
     function showFinalSummary() {
-      const summaryText = `Be ready on <strong>${answers.date}</strong> at <strong>${answers.time}</strong> to go to <strong>${answers.restaurant}</strong>!`;
+      const summaryText = `Be ready on <strong>${answers.date}</strong> at <strong>${answers.time}</strong> to meet at <strong>${answers.restaurant}</strong>!`;
       document.getElementById('final-summary').innerHTML = summaryText;
       goToStep(5);
       triggerHeartExplosion(50);
     }
 
     function submitData() {
-      // Formspree silent data sending (No email app prompt for her!)
       fetch('https://formspree.io/f/mvzedjby', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
