@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="icon" type="image/x-icon" href="icon.ico">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>A Special Question for You ❤️</title>
+  <title>Will You?</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
   <style>
     * {
@@ -103,16 +104,15 @@
     .btn-no {
       background-color: #9ca3af;
       color: white;
-      /* Slower and smooth float animation */
-      transition: top 0.7s cubic-bezier(0.25, 1, 0.5, 1), left 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+      transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
     /* Interactive Lists */
     .option-list {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      max-height: 260px;
+      gap: 10px;
+      max-height: 270px;
       overflow-y: auto;
       padding: 5px;
     }
@@ -120,7 +120,7 @@
     .option-item {
       background: white;
       border: 2px solid #f3f4f6;
-      padding: 14px 18px;
+      padding: 12px 18px;
       border-radius: 16px;
       font-weight: 600;
       color: #374151;
@@ -135,6 +135,40 @@
       border-color: #dc2626;
       background-color: #fef2f2;
       color: #dc2626;
+    }
+
+    /* Custom Input Styling */
+    .custom-time-container {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .custom-time-input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .custom-time-input:focus {
+      border-color: #dc2626;
+    }
+
+    .btn-submit-custom {
+      background-color: #dc2626;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
     }
 
     /* Interactive Dynamic Calendar */
@@ -260,6 +294,15 @@
     </div>
 
     <div class="step" id="step-2">
+      <h1>Lunch or Dinner? 🥗🍝</h1>
+      <p>What kind of date would you like?</p>
+      <div class="option-list">
+        <div class="option-item" onclick="selectMeal(this, 'Lunch')">Lunch <span></span></div>
+        <div class="option-item" onclick="selectMeal(this, 'Dinner')">Dinner <span></span></div>
+      </div>
+    </div>
+
+    <div class="step" id="step-3">
       <h1>Pick a Date 📅</h1>
       <p>Which day works for you?</p>
       
@@ -273,29 +316,30 @@
         </div>
     </div>
 
-    <div class="step" id="step-3">
+    <div class="step" id="step-4">
       <h1>Pick a Time ⏰</h1>
-      <p>What time would you like to go out?</p>
-      <div class="option-list">
-        <div class="option-item" onclick="selectTime(this, '5:00 PM')">5:00 PM <span></span></div>
-        <div class="option-item" onclick="selectTime(this, '6:00 PM')">6:00 PM <span></span></div>
-        <div class="option-item" onclick="selectTime(this, '7:00 PM')">7:00 PM <span></span></div>
-        <div class="option-item" onclick="selectTime(this, '8:00 PM')">8:00 PM <span></span></div>
+      <p>Select or type a time that works best:</p>
+      <div class="option-list" id="time-options-list">
+        </div>
+      <div class="custom-time-container">
+        <input type="text" id="custom-time-input" class="custom-time-input" placeholder="Or type a time (e.g. 12:15 PM)..." />
+        <button class="btn-submit-custom" onclick="selectCustomTime()">Set Custom Time ❤️</button>
       </div>
     </div>
 
-    <div class="step" id="step-4">
+    <div class="step" id="step-5">
       <h1>Where to Eat? 🍽️</h1>
       <p>What restaurant will you want to go out to?</p>
       <div class="option-list">
         <div class="option-item" onclick="selectRestaurant(this, 'The Old Salt')">The Old Salt <span></span></div>
         <div class="option-item" onclick="selectRestaurant(this, 'The Galley Hatch')">The Galley Hatch <span></span></div>
         <div class="option-item" onclick="selectRestaurant(this, 'Las Olas Taqueria')">Las Olas Taqueria <span></span></div>
+        <div class="option-item" onclick="selectRestaurant(this, 'Burrito Loco')">Burrito Loco <span></span></div>
         <div class="option-item" onclick="selectRestaurant(this, 'Surprise Me!')">Surprise Me! <span></span></div>
       </div>
     </div>
 
-    <div class="step" id="step-5">
+    <div class="step" id="step-6">
       <h1>It's a Date! 🎉</h1>
       <p id="final-summary" style="line-height: 1.6; color: #dc2626; font-size: 1.15rem; margin-bottom: 15px;"></p>
       <p style="font-size: 1rem; color: #4b5563; font-weight: 600;">Be at the restaurant on that day and time! Can't wait ❤️</p>
@@ -306,6 +350,7 @@
   <script>
     // Selection state
     let answers = {
+      mealType: '',
       date: '',
       time: '',
       restaurant: ''
@@ -314,22 +359,13 @@
     // Current calendar date view
     let currentDate = new Date();
 
-    // --- SLOW & SMOOTH EVASIVE "NO" BUTTON LOGIC ---
+    // --- GENTLE SLOW "NO" BUTTON MOVEMENT ---
     const noBtn = document.getElementById('no-btn');
-    let hasMoved = false;
     
     function moveNoBtn() {
-      if (!hasMoved) {
-        noBtn.style.position = 'fixed';
-        hasMoved = true;
-      }
-      // Calculate random screen position keeping padding from edges
-      const padding = 80;
-      const x = Math.random() * (window.innerWidth - padding * 2) + padding / 2;
-      const y = Math.random() * (window.innerHeight - padding * 2) + padding / 2;
-      
-      noBtn.style.left = `${x}px`;
-      noBtn.style.top = `${y}px`;
+      const offsetX = (Math.random() - 0.5) * 100;
+      const offsetY = (Math.random() - 0.5) * 60;
+      noBtn.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
     }
 
     noBtn.addEventListener('mouseover', moveNoBtn);
@@ -366,8 +402,26 @@
 
     function handleYes() {
       triggerHeartExplosion(40);
-      renderCalendar();
       setTimeout(() => goToStep(2), 1200);
+    }
+
+    // --- MEAL SELECTION (LUNCH / DINNER) ---
+    function selectMeal(element, value) {
+      document.querySelectorAll('#step-2 .option-item').forEach(item => {
+        item.classList.remove('selected');
+        item.querySelector('span').innerText = '';
+      });
+
+      element.classList.add('selected');
+      element.querySelector('span').innerText = '❤️';
+      answers.mealType = value;
+
+      populateTimeOptions(value);
+      triggerHeartExplosion(20);
+      setTimeout(() => {
+        renderCalendar();
+        goToStep(3);
+      }, 1500);
     }
 
     // --- INTERACTIVE CALENDAR ENGINE ---
@@ -391,14 +445,12 @@
       const firstDayIndex = new Date(year, month, 1).getDay();
       const totalDays = new Date(year, month + 1, 0).getDate();
 
-      // Empty slots before 1st of month
       for (let i = 0; i < firstDayIndex; i++) {
         const emptyDiv = document.createElement('div');
         emptyDiv.classList.add('date-btn', 'empty');
         daysGrid.appendChild(emptyDiv);
       }
 
-      // Month days
       for (let day = 1; day <= totalDays; day++) {
         const dateBtn = document.createElement('button');
         dateBtn.classList.add('date-btn');
@@ -406,7 +458,6 @@
         
         const fullDateStr = `${monthNames[month]} ${day}, ${year}`;
         
-        // Highlight previously selected date if viewing same month
         if (answers.date === fullDateStr) {
           dateBtn.classList.add('selected');
           dateBtn.innerHTML += `<span class="heart-marker">❤️</span>`;
@@ -422,7 +473,6 @@
       renderCalendar();
     }
 
-    // --- SELECTION HANDLERS ---
     function selectDate(element, dateStr) {
       document.querySelectorAll('.date-btn').forEach(btn => {
         btn.classList.remove('selected');
@@ -435,11 +485,32 @@
       answers.date = dateStr;
 
       triggerHeartExplosion(20);
-      setTimeout(() => goToStep(3), 3000); // 3-second delay
+      setTimeout(() => goToStep(4), 3000); // 3-second delay
+    }
+
+    // --- DYNAMIC TIME GENERATION ---
+    function populateTimeOptions(meal) {
+      const timeContainer = document.getElementById('time-options-list');
+      timeContainer.innerHTML = '';
+
+      let times = [];
+      if (meal === 'Lunch') {
+        times = ['11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '1:00 PM'];
+      } else {
+        times = ['5:00 PM', '5:30 PM', '6:00 PM', '6:30 PM', '7:00 PM', '7:30 PM', '8:00 PM'];
+      }
+
+      times.forEach(t => {
+        const item = document.createElement('div');
+        item.classList.add('option-item');
+        item.innerHTML = `${t} <span></span>`;
+        item.onclick = () => selectTime(item, t);
+        timeContainer.appendChild(item);
+      });
     }
 
     function selectTime(element, value) {
-      document.querySelectorAll('#step-3 .option-item').forEach(item => {
+      document.querySelectorAll('#step-4 .option-item').forEach(item => {
         item.classList.remove('selected');
         item.querySelector('span').innerText = '';
       });
@@ -449,11 +520,21 @@
       answers.time = value;
 
       triggerHeartExplosion(20);
-      setTimeout(() => goToStep(4), 2000); // 2-second delay
+      setTimeout(() => goToStep(5), 2000); // 2-second delay
     }
 
+    function selectCustomTime() {
+      const customVal = document.getElementById('custom-time-input').value.trim();
+      if (!customVal) return;
+
+      answers.time = customVal;
+      triggerHeartExplosion(20);
+      setTimeout(() => goToStep(5), 1500);
+    }
+
+    // --- RESTAURANT SELECTION ---
     function selectRestaurant(element, value) {
-      document.querySelectorAll('#step-4 .option-item').forEach(item => {
+      document.querySelectorAll('#step-5 .option-item').forEach(item => {
         item.classList.remove('selected');
         item.querySelector('span').innerText = '';
       });
@@ -471,9 +552,9 @@
 
     // --- FINAL DISPLAY & FORMSPREE SUBMISSION ---
     function showFinalSummary() {
-      const summaryText = `Be ready on <strong>${answers.date}</strong> at <strong>${answers.time}</strong> to meet at <strong>${answers.restaurant}</strong>!`;
+      const summaryText = `Be ready for <strong>${answers.mealType}</strong> on <strong>${answers.date}</strong> at <strong>${answers.time}</strong> to meet at <strong>${answers.restaurant}</strong>!`;
       document.getElementById('final-summary').innerHTML = summaryText;
-      goToStep(5);
+      goToStep(6);
       triggerHeartExplosion(50);
     }
 
@@ -483,6 +564,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: `Luca! She said YES! Here are her picks:`,
+          MealType: answers.mealType,
           Date: answers.date,
           Time: answers.time,
           Restaurant: answers.restaurant
