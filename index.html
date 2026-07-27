@@ -104,7 +104,8 @@
     .btn-no {
       background-color: #9ca3af;
       color: white;
-      transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+      /* Smooth gliding motion */
+      transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
     /* Interactive Lists */
@@ -359,19 +360,44 @@
     // Current calendar date view
     let currentDate = new Date();
 
-    // --- GENTLE SLOW "NO" BUTTON MOVEMENT ---
+    // --- PROXIMITY DETECTION & EVASIVE "NO" BUTTON ---
     const noBtn = document.getElementById('no-btn');
-    
-    function moveNoBtn() {
-      const offsetX = (Math.random() - 0.5) * 100;
-      const offsetY = (Math.random() - 0.5) * 60;
-      noBtn.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+    let currentX = 0;
+    let currentY = 0;
+
+    function moveNoBtnAway() {
+      // Shift away smoothly
+      const offsetX = (Math.random() - 0.5) * 220;
+      const offsetY = (Math.random() - 0.5) * 150;
+      currentX += offsetX;
+      currentY += offsetY;
+
+      // Keep within bounds roughly
+      if (Math.abs(currentX) > 150) currentX = currentX > 0 ? 100 : -100;
+      if (Math.abs(currentY) > 120) currentY = currentY > 0 ? 80 : -80;
+
+      noBtn.style.transform = `translate(${currentX}px, ${currentY}px)`;
     }
 
-    noBtn.addEventListener('mouseover', moveNoBtn);
+    // Track cursor distance within 15px of button bounding box
+    document.addEventListener('mousemove', (e) => {
+      if (!document.getElementById('step-1').classList.contains('active')) return;
+
+      const rect = noBtn.getBoundingClientRect();
+      const proximity = 15; // 15px trigger threshold
+
+      const nearX = e.clientX >= (rect.left - proximity) && e.clientX <= (rect.right + proximity);
+      const nearY = e.clientY >= (rect.top - proximity) && e.clientY <= (rect.bottom + proximity);
+
+      if (nearX && nearY) {
+        moveNoBtnAway();
+      }
+    });
+
+    // Touch devices support
     noBtn.addEventListener('touchstart', (e) => {
       e.preventDefault();
-      moveNoBtn();
+      moveNoBtnAway();
     });
 
     // --- HEART ANIMATION ENGINE ---
@@ -573,4 +599,4 @@
     }
   </script>
 </body>
-</html>
+</html> 
